@@ -1,3 +1,5 @@
+module AlgThys
+
 # Algebraic Theories
 # Owen & Christian [Fall 2021]
 
@@ -63,4 +65,6 @@ function check_presentation(p::Presentation)
     for e in p.equations
         @assert sort_check(p, e[1], e[2][1]) == sort_check(p, e[1], e[2][2])
     end
+end
+
 end
