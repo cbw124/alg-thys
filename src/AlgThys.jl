@@ -26,9 +26,13 @@ module AlgThys
 
 using Reexport
 
+include("LabeledVectors.jl")
 include("Theories.jl")
+include("Parsing.jl")
 include("Examples.jl")
 
+@reexport using .LabeledVectors
 @reexport using .Theories
+@reexport using .Parsing
 
 end
