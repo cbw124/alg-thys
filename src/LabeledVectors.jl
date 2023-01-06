@@ -31,8 +31,10 @@ indexof(lv::LabeledVector{S}, l::S) where {S} = lv.indexes[l]
 labels(lv::LabeledVector) = lv.labels
 
 unlabel(lv::LabeledVector) = lv.elts
+unlabel(v::Vector) = v
 
 label(v::Vector{T}, labels::Vector{S}) where {S,T} = LabeledVector(labels, v)
+label(lv::LabeledVector{S,T}, labels::Vector{S}) where {S,T} = LabeledVector(labels, lv.elts)
 
 Base.getindex(lv::LabeledVector, i::Int) = lv.elts[i]
 Base.getindex(lv::LabeledVector{S}, l::S) where {S} = lv.elts[indexof(lv,l)]

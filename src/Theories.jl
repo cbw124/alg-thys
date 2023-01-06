@@ -1,7 +1,7 @@
 module Theories
 export Context, UnlabeledContext, LabeledContext,
   Term, Var, Appl,
-  Operation, Equation, LabeledEquation, UnlabeledEquation,
+  Operation, PrimEq, LabeledPrimEq, UnlabeledPrimEq,
   Presentation, UnlabeledPresentation, LabeledPresentation,
   sort_check, check_presentation
 
@@ -31,8 +31,10 @@ struct LabeledContext{S} <: Context
 end
 
 unlabel(c::LabeledContext) = UnlabeledContext(unlabel(c.vartypes))
+unlabel(c::UnlabeledContext) = c
 
 label(c::UnlabeledContext, labels::Vector{S}) where {S} = LabeledContext{S}(label(c.vartypes, labels))
+label(c::LabeledContext, labels::Vector{S}) where {S} = LabeledContext{S}(label(unlabel(c.vartypes), labels))
 
 @data Term begin
   Var(index::Int)
@@ -44,37 +46,37 @@ struct Operation
   ret::Int
 end
 
-abstract type Equation end
+abstract type PrimEq end
 
-struct LabeledEquation{S} <: Equation
+struct LabeledPrimEq{S} <: PrimEq
   context::LabeledContext{S}
   lhs::Term
   rhs::Term
 end
 
-struct UnlabeledEquation <: Equation
+struct UnlabeledPrimEq <: PrimEq
   context::UnlabeledContext
   lhs::Term
   rhs::Term
 end
 
-unlabel(eq::LabeledEquation) = UnlabeledEquation(unlabel(eq.context), eq.lhs, eq.rhs)
+unlabel(eq::LabeledPrimEq) = UnlabeledPrimEq(unlabel(eq.context), eq.lhs, eq.rhs)
 
-label(eq::UnlabeledEquation, labels::Vector{S}) where {S} =
-  LabeledEquation{S}(label(eq.context, labels), eq.lhs, eq.rhs)
+label(eq::UnlabeledPrimEq, labels::Vector{S}) where {S} =
+  LabeledPrimEq{S}(label(eq.context, labels), eq.lhs, eq.rhs)
 
 abstract type Presentation end
 
 struct UnlabeledPresentation <: Presentation
   sorts::Vector{Tuple{}}
   operations::Vector{Operation}
-  equations::Vector{UnlabeledEquation}
+  equations::Vector{UnlabeledPrimEq}
 end
 
 struct LabeledPresentation{S} <: Presentation
   sorts::LabeledVector{S, Tuple{}}
   operations::LabeledVector{S, Operation}
-  equations::LabeledVector{S, LabeledEquation{S}}
+  equations::LabeledVector{S, LabeledPrimEq{S}}
 end
 
 unlabel(p::LabeledPresentation) =
